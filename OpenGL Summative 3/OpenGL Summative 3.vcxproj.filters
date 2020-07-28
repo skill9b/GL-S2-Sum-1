@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Game Obj">
+      <UniqueIdentifier>{c6eeddb3-d7da-403b-a0d8-7268f3d4c22b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Managers">
+      <UniqueIdentifier>{f2266c1e-ca8c-46d3-a29e-333772987aee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GL Mesh/Model">
+      <UniqueIdentifier>{6582dcbe-5c67-420a-8ffe-795e6a38d7c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game Obj">
+      <UniqueIdentifier>{dd3f8826-5808-4f7a-8abc-7537c46baf32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mangers">
+      <UniqueIdentifier>{e6d7f68b-c828-49ec-9824-759a8698998b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GL Mesh/Model">
+      <UniqueIdentifier>{3bdd4fab-bb42-41f3-979a-f690a9bfb8c3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Global.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadeLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cAudio.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="cCamera.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="cGameManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="cInput.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="cLevel.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="cMenu.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="cText.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="cBullet.h">
+      <Filter>Header Files\Game Obj</Filter>
+    </ClInclude>
+    <ClInclude Include="cCubeMap.h">
+      <Filter>Header Files\Game Obj</Filter>
+    </ClInclude>
+    <ClInclude Include="cEnemy.h">
+      <Filter>Header Files\Game Obj</Filter>
+    </ClInclude>
+    <ClInclude Include="cPlayer.h">
+      <Filter>Header Files\Game Obj</Filter>
+    </ClInclude>
+    <ClInclude Include="cEntity.h">
+      <Filter>Header Files\GL Mesh/Model</Filter>
+    </ClInclude>
+    <ClInclude Include="cMesh.h">
+      <Filter>Header Files\GL Mesh/Model</Filter>
+    </ClInclude>
+    <ClInclude Include="cModel.h">
+      <Filter>Header Files\GL Mesh/Model</Filter>
+    </ClInclude>
+    <ClInclude Include="cModelMesh.h">
+      <Filter>Header Files\GL Mesh/Model</Filter>
+    </ClInclude>
+    <ClInclude Include="cSprite.h">
+      <Filter>Header Files\GL Mesh/Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>Header Files\GL Mesh/Model</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ShadeLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cBullet.cpp">
+      <Filter>Source Files\Game Obj</Filter>
+    </ClCompile>
+    <ClCompile Include="cCubeMap.cpp">
+      <Filter>Source Files\Game Obj</Filter>
+    </ClCompile>
+    <ClCompile Include="cEnemy.cpp">
+      <Filter>Source Files\Game Obj</Filter>
+    </ClCompile>
+    <ClCompile Include="cPlayer.cpp">
+      <Filter>Source Files\Game Obj</Filter>
+    </ClCompile>
+    <ClCompile Include="cAudio.cpp">
+      <Filter>Source Files\Mangers</Filter>
+    </ClCompile>
+    <ClCompile Include="cCamera.cpp">
+      <Filter>Source Files\Mangers</Filter>
+    </ClCompile>
+    <ClCompile Include="cGameManager.cpp">
+      <Filter>Source Files\Mangers</Filter>
+    </ClCompile>
+    <ClCompile Include="cInput.cpp">
+      <Filter>Source Files\Mangers</Filter>
+    </ClCompile>
+    <ClCompile Include="cLevel.cpp">
+      <Filter>Source Files\Mangers</Filter>
+    </ClCompile>
+    <ClCompile Include="cMenu.cpp">
+      <Filter>Source Files\Mangers</Filter>
+    </ClCompile>
+    <ClCompile Include="cText.cpp">
+      <Filter>Source Files\Mangers</Filter>
+    </ClCompile>
+    <ClCompile Include="cEntity.cpp">
+      <Filter>Source Files\GL Mesh/Model</Filter>
+    </ClCompile>
+    <ClCompile Include="cMesh.cpp">
+      <Filter>Source Files\GL Mesh/Model</Filter>
+    </ClCompile>
+    <ClCompile Include="cModel.cpp">
+      <Filter>Source Files\GL Mesh/Model</Filter>
+    </ClCompile>
+    <ClCompile Include="cModelMesh.cpp">
+      <Filter>Source Files\GL Mesh/Model</Filter>
+    </ClCompile>
+    <ClCompile Include="cSprite.cpp">
+      <Filter>Source Files\GL Mesh/Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>Source Files\GL Mesh/Model</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Shaders\CubeMap.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\CubeMap.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\Model.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\Model.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\phong.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\RimLighting.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\Text.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\Text.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\Reflection.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\Reflection.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>
