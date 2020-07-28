@@ -50,8 +50,9 @@ void cGameManager::Update(float _deltaTime)
 	m_pCamera->Update(_deltaTime);
 	m_pCubeMap->Update();
 
+	m_pLevelOne->Update(_deltaTime, m_pInputManager, m_pCamera);
 
-	switch (m_CurrentState)
+	/*switch (m_CurrentState)
 	{
 	case State::Menu:	//If in menu
 		{
@@ -84,7 +85,7 @@ void cGameManager::Update(float _deltaTime)
 		break;
 	default:
 		break;
-	}
+	}*/
 
 	
 
@@ -97,8 +98,9 @@ void cGameManager::Render()
 
 	//Render persistant objects
 	m_pCubeMap->Render();
+	m_pLevelOne->Render(m_pCamera, m_gliReflectionProgram, m_pCubeMap);
 
-	switch (m_CurrentState)
+	/*switch (m_CurrentState)
 	{
 	case State::Menu: //Render menu
 	{
@@ -120,7 +122,7 @@ void cGameManager::Render()
 
 	default:
 		break;
-	}
+	}*/
 
 	glutSwapBuffers();
 }

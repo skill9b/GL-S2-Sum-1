@@ -22,12 +22,20 @@ int main(int argc, char** argv)
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA | GLUT_MULTISAMPLE);
 	glutInitWindowPosition(50, 50);
 	glutInitWindowSize(SCR_WIDTH, SCR_HEIGHT);
 	glutCreateWindow("3D Shooter");
 
+	
 	//Enable settings
+	//Black bars on top and bottom
+	glEnable(GL_SCISSOR_TEST);
+	glScissor(0, 50, 600, 500);
+
+	glutSetOption(GLUT_MULTISAMPLE, 8);
+	glEnable(GL_MULTISAMPLE);
+
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
@@ -35,6 +43,7 @@ int main(int argc, char** argv)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+
 
 	//Sets up all gl function callbacks
 	if (glewInit() != GLEW_OK)
