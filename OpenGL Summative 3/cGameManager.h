@@ -15,6 +15,7 @@ public:
 	void Update(float _deltaTime);
 	void Render();
 	cInput* GetInputManager();
+	cEntity* InitialiseCube();
 
 private:
 	State m_CurrentState;
@@ -22,8 +23,10 @@ private:
 	cLevel* m_pLevelOne;
 	cCamera* m_pCamera;
 	GLuint m_gliReflectionProgram;
+	GLuint m_gliTestProgram;
 	float m_fScreenWidth, m_fScreenHeight;
 	cEntity* m_pBackground;
 	cInput* m_pInputManager;
 	cCubeMap* m_pCubeMap;
+	cEntity* m_pCube;
 };

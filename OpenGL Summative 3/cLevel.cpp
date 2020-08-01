@@ -138,7 +138,7 @@ void cLevel::Render(cCamera* _camera, GLuint _reflectionProgram, cCubeMap* _cube
 		m_pLives->Render();
 		RenderBullets(_camera, _reflectionProgram, _cubeMap);
 		RenderEnemies();
-		m_pTank->Render();
+		//m_pTank->Render();
 	}
 	//Results
 	else
