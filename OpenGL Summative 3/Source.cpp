@@ -35,7 +35,8 @@ int main(int argc, char** argv)
 
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-	
+	glStencilMask(0x00); //disable writing to stencil mask
+
 
 
 	glutSetOption(GLUT_MULTISAMPLE, 8);

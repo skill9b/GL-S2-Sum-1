@@ -43,7 +43,7 @@ void cGameManager::Initialise(float _deltaTime)
 	m_pMainMenu->Initialise();
 	m_pCamera->Initialise(SCR_WIDTH, SCR_HEIGHT, 10000.0f, 0.1f);
 	m_pCubeMap = new cCubeMap(m_pCamera);
-	m_pCube = InitialiseCube("Resources/Textures/NewBall.png");
+	m_pCube = InitialiseCube("Resources/Textures/YellowCube.png");
 	m_pScaledCube = InitialiseCube("Resources/Textures/RedOutline.png");
 	m_pScaledCube->SetScale(vec3(1.0f, 1.0f, 1.0f), 1.1f);
 
@@ -114,7 +114,7 @@ void cGameManager::Render()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	//Render persistant objects
-	//m_pCubeMap->Render();
+	m_pCubeMap->Render();
 
 
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
@@ -128,9 +128,8 @@ void cGameManager::Render()
 	m_pScaledCube->Render(m_gliTestProgram, m_pCamera);
 
 	glStencilMask(0x00); //disable writing to stencil mask
-	//glDisable(GL_STENCIL_TEST); // Disable stencil test
 	
-	glStencilMask(0xFF); // Enable writing again for next time
+	//glStencilMask(0xFF); // Enable writing again for next time
 	
 
 	/*switch (m_CurrentState)
