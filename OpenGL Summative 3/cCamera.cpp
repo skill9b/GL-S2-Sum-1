@@ -7,8 +7,8 @@ cCamera::cCamera()
 	m_fFar = 0.0f;
 	m_fNear = 0.0f;
 	m_fTimeElapsed = 0.0f;
-	m_v3Position = vec3(0.0f, 15.0f, 15.0f);
-	m_v3LookDirection = vec3(0.0f, 0.0f, -20.0f);
+	m_v3Position = vec3(4.0f, 5.0f, 5.0f);
+	m_v3LookDirection = vec3(0.0f, 0.0f, 0.0f);
 	m_v3UpDirection = vec3(0.0f, 1.0f, 0.0f);
 }
 

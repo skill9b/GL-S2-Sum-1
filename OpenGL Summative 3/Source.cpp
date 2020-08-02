@@ -33,6 +33,11 @@ int main(int argc, char** argv)
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(0, 50, 600, 500);
 
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	
+
+
 	glutSetOption(GLUT_MULTISAMPLE, 8);
 	glEnable(GL_MULTISAMPLE);
 
@@ -54,7 +59,7 @@ int main(int argc, char** argv)
 	}
 
 	//Sets the clear color
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); //Black
+	glClearColor(0.0f, 0.0f, 1.0f, 1.0f); //Black
 
 
 	GameManager.Initialise(0.0f);

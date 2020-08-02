@@ -10,6 +10,7 @@ cGameManager::cGameManager()
 	m_pBackground = new cEntity();
 	m_pCubeMap = 0;
 	m_pCube = new cEntity();
+	m_pScaledCube = new cEntity();
 
 
 	m_gliReflectionProgram = 0;
@@ -25,9 +26,11 @@ cGameManager::~cGameManager()
 	delete m_pCamera;
 	delete m_pInputManager;
 	delete m_pCube;
+	delete m_pScaledCube;
 
 	m_pLevelOne = 0;
 	m_pCube = 0;
+	m_pScaledCube = 0;
 	m_pMainMenu = 0;
 	m_pCamera = 0;
 	m_pInputManager = 0;
@@ -40,7 +43,9 @@ void cGameManager::Initialise(float _deltaTime)
 	m_pMainMenu->Initialise();
 	m_pCamera->Initialise(SCR_WIDTH, SCR_HEIGHT, 10000.0f, 0.1f);
 	m_pCubeMap = new cCubeMap(m_pCamera);
-	m_pCube = InitialiseCube();
+	m_pCube = InitialiseCube("Resources/Textures/NewBall.png");
+	m_pScaledCube = InitialiseCube("Resources/Textures/RedOutline.png");
+	m_pScaledCube->SetScale(vec3(1.0f, 1.0f, 1.0f), 1.1f);
 
 	//Program
 	m_gliReflectionProgram = ShaderLoader::CreateProgram("Resources/Shaders/Reflection.vs",
@@ -56,8 +61,11 @@ void cGameManager::Update(float _deltaTime)
 {
 	//Update persistant objects	
 	m_pCamera->Update(_deltaTime);
-	m_pCube->Update(_deltaTime);
 	m_pCubeMap->Update();
+
+	m_pCube->Update(_deltaTime);
+
+	m_pScaledCube->Update(_deltaTime);
 
 	//m_pLevelOne->Update(_deltaTime, m_pInputManager, m_pCamera);
 
@@ -103,12 +111,27 @@ void cGameManager::Update(float _deltaTime)
 
 void cGameManager::Render()
 {
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	//Render persistant objects
-	m_pCubeMap->Render();
+	//m_pCubeMap->Render();
+
+
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilMask(0xFF); // enable writing to the stencil buffer
+
 	m_pCube->Render(m_gliTestProgram, m_pCamera);
-	//m_pLevelOne->Render(m_pCamera, m_gliReflectionProgram, m_pCubeMap);
+
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF); // write to areas where value is not equal to 1
+	glStencilMask(0x00); //disable writing to stencil buffer
+
+	m_pScaledCube->Render(m_gliTestProgram, m_pCamera);
+
+	glStencilMask(0x00); //disable writing to stencil mask
+	//glDisable(GL_STENCIL_TEST); // Disable stencil test
+	
+	glStencilMask(0xFF); // Enable writing again for next time
+	
 
 	/*switch (m_CurrentState)
 	{
@@ -142,7 +165,7 @@ cInput* cGameManager::GetInputManager()
 	return m_pInputManager;
 }
 
-cEntity* cGameManager::InitialiseCube()
+cEntity* cGameManager::InitialiseCube(string filedir)
 {
 	cBullet* m_pCube = new cBullet();
 
@@ -356,7 +379,7 @@ cEntity* cGameManager::InitialiseCube()
 	vec3 v3CubeScale = vec3(1.0f, 1.0f, 1.0f);
 	float fCubeScaleFactor = 1.0f;
 
-	m_pCube->Intitialise(vecCubeVertices, vecCubeIndices, fCubeFrames, strCubeImage,
+	m_pCube->Intitialise(vecCubeVertices, vecCubeIndices, fCubeFrames, filedir,
 		v3CubeTranslation, v3CubeRotation, fCubeRotAngle,
 		v3CubeScale, fCubeScaleFactor, CubeFPS, CubeWidth, CubeHeight);
 

@@ -15,7 +15,7 @@ public:
 	void Update(float _deltaTime);
 	void Render();
 	cInput* GetInputManager();
-	cEntity* InitialiseCube();
+	cEntity* InitialiseCube(string filedir);
 
 private:
 	State m_CurrentState;
@@ -28,5 +28,8 @@ private:
 	cEntity* m_pBackground;
 	cInput* m_pInputManager;
 	cCubeMap* m_pCubeMap;
+
 	cEntity* m_pCube;
+	cEntity* m_pScaledCube;
+
 };
