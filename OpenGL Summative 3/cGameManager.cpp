@@ -51,7 +51,7 @@ void cGameManager::Initialise(float _deltaTime)
 	m_pCubeMap = new cCubeMap(m_pCamera);
 
 
-	m_pCube = InitialiseCube("Resources/Textures/YellowCube.png");
+	m_pCube = InitialiseCube("Resources/Textures/TransparentCube.png");
 	m_pScaledCube = InitialiseCube("Resources/Textures/RedOutline.png");
 	m_pScaledCube->SetScale(vec3(1.0f, 1.0f, 1.0f), 1.1f);
 	m_pWater = InitialiseCube("Resources/Textures/Water.png");
