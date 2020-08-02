@@ -31,5 +31,6 @@ private:
 
 	cEntity* m_pCube;
 	cEntity* m_pScaledCube;
+	cEntity* m_pWater;
 
 };

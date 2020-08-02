@@ -9,8 +9,11 @@ cGameManager::cGameManager()
 	m_pCamera = new cCamera();
 	m_pBackground = new cEntity();
 	m_pCubeMap = 0;
+
+
 	m_pCube = new cEntity();
 	m_pScaledCube = new cEntity();
+	m_pWater = new cEntity();
 
 
 	m_gliReflectionProgram = 0;
@@ -25,8 +28,11 @@ cGameManager::~cGameManager()
 	delete m_pMainMenu;
 	delete m_pCamera;
 	delete m_pInputManager;
+
+
 	delete m_pCube;
 	delete m_pScaledCube;
+	delete m_pWater;
 
 	m_pLevelOne = 0;
 	m_pCube = 0;
@@ -43,9 +49,14 @@ void cGameManager::Initialise(float _deltaTime)
 	m_pMainMenu->Initialise();
 	m_pCamera->Initialise(SCR_WIDTH, SCR_HEIGHT, 10000.0f, 0.1f);
 	m_pCubeMap = new cCubeMap(m_pCamera);
+
+
 	m_pCube = InitialiseCube("Resources/Textures/YellowCube.png");
 	m_pScaledCube = InitialiseCube("Resources/Textures/RedOutline.png");
 	m_pScaledCube->SetScale(vec3(1.0f, 1.0f, 1.0f), 1.1f);
+	m_pWater = InitialiseCube("Resources/Textures/Water.png");
+	m_pWater->SetScale(vec3(5.0f, 1.0f, 5.0f), 2.0f);
+	m_pWater->SetTranslation(m_pWater->GetTranslate() - vec3(0.0f, 1.0f, 0.0f));
 
 	//Program
 	m_gliReflectionProgram = ShaderLoader::CreateProgram("Resources/Shaders/Reflection.vs",
@@ -66,6 +77,8 @@ void cGameManager::Update(float _deltaTime)
 	m_pCube->Update(_deltaTime);
 
 	m_pScaledCube->Update(_deltaTime);
+
+	m_pWater->Update(_deltaTime);
 
 	//m_pLevelOne->Update(_deltaTime, m_pInputManager, m_pCamera);
 
@@ -129,8 +142,7 @@ void cGameManager::Render()
 
 	glStencilMask(0x00); //disable writing to stencil mask
 	
-	//glStencilMask(0xFF); // Enable writing again for next time
-	
+	m_pWater->Render(m_gliTestProgram, m_pCamera);
 
 	/*switch (m_CurrentState)
 	{
