@@ -51,11 +51,13 @@ void cGameManager::Initialise(float _deltaTime)
 	m_pCubeMap = new cCubeMap(m_pCamera);
 
 
-	m_pCube = InitialiseCube("Resources/Textures/TransparentCube.png");
+	m_pCube = InitialiseCube("Resources/Textures/YellowCube.png");
 	m_pScaledCube = InitialiseCube("Resources/Textures/RedOutline.png");
 	m_pScaledCube->SetScale(vec3(1.0f, 1.0f, 1.0f), 1.1f);
+
+	m_pTransparentCube = InitialiseCube("Resources/Textures/TransparentCube.png");
 	m_pWater = InitialiseCube("Resources/Textures/Water.png");
-	m_pWater->SetScale(vec3(5.0f, 1.0f, 5.0f), 2.0f);
+	m_pWater->SetScale(vec3(8.0f, 1.0f, 8.0f), 2.0f);
 	m_pWater->SetTranslation(m_pWater->GetTranslate() - vec3(0.0f, 1.0f, 0.0f));
 
 	//Program
@@ -74,11 +76,7 @@ void cGameManager::Update(float _deltaTime)
 	m_pCamera->Update(_deltaTime);
 	m_pCubeMap->Update();
 
-	m_pCube->Update(_deltaTime);
-
-	m_pScaledCube->Update(_deltaTime);
-
-	m_pWater->Update(_deltaTime);
+	
 
 	//m_pLevelOne->Update(_deltaTime, m_pInputManager, m_pCamera);
 
@@ -129,20 +127,7 @@ void cGameManager::Render()
 	//Render persistant objects
 	m_pCubeMap->Render();
 
-
-	glStencilFunc(GL_ALWAYS, 1, 0xFF);
-	glStencilMask(0xFF); // enable writing to the stencil buffer
-
-	m_pCube->Render(m_gliTestProgram, m_pCamera);
-
-	glStencilFunc(GL_NOTEQUAL, 1, 0xFF); // write to areas where value is not equal to 1
-	glStencilMask(0x00); //disable writing to stencil buffer
-
-	m_pScaledCube->Render(m_gliTestProgram, m_pCamera);
-
-	glStencilMask(0x00); //disable writing to stencil mask
-	
-	m_pWater->Render(m_gliTestProgram, m_pCamera);
+	RenderCurrentLevel();
 
 	/*switch (m_CurrentState)
 	{
@@ -174,6 +159,98 @@ void cGameManager::Render()
 cInput* cGameManager::GetInputManager()
 {
 	return m_pInputManager;
+}
+
+void cGameManager::RenderCurrentLevel()
+{
+	if (IsFirstLevel)
+	{
+		glEnable(GL_STENCIL_TEST);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilMask(0xFF); // enable writing to the stencil buffer
+
+		m_pCube->Render(m_gliTestProgram, m_pCamera);
+
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF); // write to areas where value is not equal to 1
+		glStencilMask(0x00); //disable writing to stencil buffer
+
+		m_pScaledCube->Render(m_gliTestProgram, m_pCamera);
+
+		glStencilMask(0x00); //disable writing to stencil mask
+
+		glDisable(GL_STENCIL_TEST);
+	}
+	else
+	{
+		//Add fog shader code and make new program
+		m_pTransparentCube->Render(m_gliTestProgram, m_pCamera);
+		m_pWater->Render(m_gliTestProgram, m_pCamera);
+
+	}
+}
+
+void cGameManager::UpdateCurrentLevel(float _deltaTime)
+{
+	if (IsFirstLevel)
+	{
+
+		m_pCube->Update(_deltaTime);
+
+		m_pScaledCube->Update(_deltaTime);
+
+
+	}
+	else
+	{
+		m_pTransparentCube->Update(_deltaTime);
+		m_pWater->Update(_deltaTime);
+	}
+}
+
+void cGameManager::SwitchLevel()
+{
+	ResetCurrentLevel();
+
+	//Switch state
+	IsFirstLevel = !IsFirstLevel;
+
+}
+
+void cGameManager::ResetCurrentLevel()
+{
+	//Reset current level objects
+	if (IsFirstLevel)
+	{
+		//Destroy
+		m_pCube->~cEntity();
+		m_pScaledCube->~cEntity();
+
+		//Re-create
+		m_pCube = new cEntity();
+		m_pScaledCube = new cEntity();
+		m_pWater = new cEntity();
+
+		//Initialise
+		m_pCube = InitialiseCube("Resources/Textures/TransparentCube.png");
+		m_pScaledCube = InitialiseCube("Resources/Textures/RedOutline.png");
+		m_pScaledCube->SetScale(vec3(1.0f, 1.0f, 1.0f), 1.1f);
+	}
+	else
+	{
+		//Destroy
+		m_pTransparentCube->~cEntity();
+		m_pWater->~cEntity();
+
+		//Re-create
+		m_pTransparentCube = new cEntity();
+		m_pWater = new cEntity();
+
+		//Initialise
+		m_pTransparentCube = InitialiseCube("Resources/Textures/TransparentCube.png");
+		m_pWater = InitialiseCube("Resources/Textures/Water.png");
+		m_pWater->SetScale(vec3(8.0f, 1.0f, 8.0f), 2.0f);
+		m_pWater->SetTranslation(m_pWater->GetTranslate() - vec3(0.0f, 1.0f, 0.0f));
+	}
 }
 
 cEntity* cGameManager::InitialiseCube(string filedir)
@@ -396,4 +473,5 @@ cEntity* cGameManager::InitialiseCube(string filedir)
 
 	return m_pCube;
 }
+
 

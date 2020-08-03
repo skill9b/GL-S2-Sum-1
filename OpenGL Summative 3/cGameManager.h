@@ -17,20 +17,37 @@ public:
 	cInput* GetInputManager();
 	cEntity* InitialiseCube(string filedir);
 
+	void RenderCurrentLevel();
+	void UpdateCurrentLevel(float _deltaTime);
+	void SwitchLevel();
+	void ResetCurrentLevel();
+
 private:
-	State m_CurrentState;
 	cMenu* m_pMainMenu;
 	cLevel* m_pLevelOne;
-	cCamera* m_pCamera;
-	GLuint m_gliReflectionProgram;
-	GLuint m_gliTestProgram;
-	float m_fScreenWidth, m_fScreenHeight;
+	
+	///Objects
 	cEntity* m_pBackground;
-	cInput* m_pInputManager;
 	cCubeMap* m_pCubeMap;
 
+	//Level One
 	cEntity* m_pCube;
 	cEntity* m_pScaledCube;
+
+	//Level Two
+	cEntity* m_pTransparentCube;
 	cEntity* m_pWater;
+
+
+	//Managers
+	cCamera* m_pCamera;
+	State m_CurrentState;
+	cInput* m_pInputManager;
+
+	//Utility
+	float m_fScreenWidth, m_fScreenHeight;
+	GLuint m_gliReflectionProgram;
+	GLuint m_gliTestProgram;
+	bool IsFirstLevel;
 
 };

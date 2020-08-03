@@ -33,7 +33,6 @@ int main(int argc, char** argv)
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(0, 50, 600, 500);
 
-	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glStencilMask(0x00); //disable writing to stencil mask
 
