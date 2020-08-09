@@ -207,6 +207,16 @@ void cGameManager::UpdateCurrentLevel(float _deltaTime)
 	}
 }
 
+void cGameManager::CheckInput()
+{
+	if (m_pInputManager->KeyState['r'] == InputState::INPUT_DOWN_FIRST)
+	{
+		//Switch level
+	}
+
+	if (m_pInputManager->KeyState['r'] == InputState::INPUT_DOWN_FIRST)
+}
+
 void cGameManager::SwitchLevel()
 {
 	ResetCurrentLevel();

@@ -21,6 +21,7 @@ public:
 	void UpdateCurrentLevel(float _deltaTime);
 	void SwitchLevel();
 	void ResetCurrentLevel();
+	void CheckInput();
 
 private:
 	cMenu* m_pMainMenu;
