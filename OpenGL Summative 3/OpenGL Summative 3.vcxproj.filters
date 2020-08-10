@@ -181,5 +181,11 @@
     <None Include="Resources\Shaders\Reflection.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Resources\Shaders\Fog.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\Fog.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

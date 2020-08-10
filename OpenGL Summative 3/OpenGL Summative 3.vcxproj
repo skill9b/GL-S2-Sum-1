@@ -188,6 +188,8 @@
   <ItemGroup>
     <None Include="Resources\Shaders\CubeMap.fs" />
     <None Include="Resources\Shaders\CubeMap.vs" />
+    <None Include="Resources\Shaders\Fog.fs" />
+    <None Include="Resources\Shaders\Fog.vs" />
     <None Include="Resources\Shaders\Model.fs" />
     <None Include="Resources\Shaders\Model.vs" />
     <None Include="Resources\Shaders\phong.vs" />
