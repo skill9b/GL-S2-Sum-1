@@ -8,13 +8,14 @@ out vec4 color;
 uniform float currentTime;
 uniform sampler2D tex;
 uniform sampler2D tex2;
+
 uniform vec3 camPos;
 float d = distance(mWorldPos.xyz, camPos);
-float lerp = (d - 5.0f) / 10.f;
-lerp = clamp(lerp, 0.0, 1.0);
+float lerp = (d - 5.0f) / 50.f;
 vec4 vFogColor = vec4(0.5f, 0.5f, 0.5f, 1.0f);
 
 void main()
 {
-    color = mix(color, vFogColor, lerp);
+    lerp = clamp(lerp, 0.0, 1.0);
+    color = mix(texture(tex, fragTexCoord), vFogColor, lerp);
 }
