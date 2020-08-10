@@ -6,16 +6,17 @@ layout (location = 2) in vec2 texCoord;
 
 out vec3 fragColor;
 out vec2 fragTexCoord;
+out vec4 mWorldPos;
 
 uniform float TexPosX;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
 
-vec4 mWorldPos = model * vec4(position, 1.0);
 
 void main()
 {
+    mWorldPos = model * vec4(position, 1.0);
     gl_Position = proj * view * mWorldPos;
     fragColor = color;
     fragTexCoord = texCoord + vec2(TexPosX, 0);
