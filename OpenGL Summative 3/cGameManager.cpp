@@ -20,6 +20,14 @@ cGameManager::cGameManager()
 	m_gliTestProgram = 0;
 	m_fScreenWidth = SCR_WIDTH;
 	m_fScreenHeight = SCR_HEIGHT;
+
+	CamSpeed = 50.0f;
+	IsFirstLevel = false;
+	StencilOn = false;
+	StencilKeyPressed = false;
+	ScissorKeyPressed = false;
+	RestartKeyPressed = false;
+	ScissorDisabled = false;
 }
 
 cGameManager::~cGameManager()
@@ -53,7 +61,7 @@ void cGameManager::Initialise(float _deltaTime)
 
 	m_pCube = InitialiseCube("Resources/Textures/YellowCube.png");
 	m_pScaledCube = InitialiseCube("Resources/Textures/RedOutline.png");
-	m_pScaledCube->SetScale(vec3(1.0f, 1.0f, 1.0f), 1.1f);
+	m_pScaledCube->SetScale(vec3(1.0f, 1.0f, 1.0f), 1.2f);
 
 	m_pTransparentCube = InitialiseCube("Resources/Textures/TransparentCube.png");
 	m_pWater = InitialiseCube("Resources/Textures/Water.png");
@@ -64,8 +72,8 @@ void cGameManager::Initialise(float _deltaTime)
 	m_gliReflectionProgram = ShaderLoader::CreateProgram("Resources/Shaders/Reflection.vs",
 		"Resources/Shaders/Reflection.fs");
 
-	m_gliTestProgram = ShaderLoader::CreateProgram("Resources/Shaders/Basic.vs",
-		"Resources/Shaders/Basic.fs");
+	m_gliTestProgram = ShaderLoader::CreateProgram("Resources/Shaders/Fog.vs",
+		"Resources/Shaders/Fog.fs");
 
 	Update(_deltaTime);
 }
@@ -73,13 +81,14 @@ void cGameManager::Initialise(float _deltaTime)
 void cGameManager::Update(float _deltaTime)
 {
 	//Update persistant objects	
+	CameraMove(_deltaTime);
 	m_pCamera->Update(_deltaTime);
 	m_pCubeMap->Update();
-
+	CheckInput();
 	
 
 	//m_pLevelOne->Update(_deltaTime, m_pInputManager, m_pCamera);
-
+	UpdateCurrentLevel(_deltaTime);
 	/*switch (m_CurrentState)
 	{
 	case State::Menu:	//If in menu
@@ -163,20 +172,28 @@ cInput* cGameManager::GetInputManager()
 
 void cGameManager::RenderCurrentLevel()
 {
+	if (ScissorDisabled)
+	{
+		glDisable(GL_SCISSOR_TEST);
+	}
+
 	if (IsFirstLevel)
 	{
 		glEnable(GL_STENCIL_TEST);
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF); 
 		glStencilMask(0xFF); // enable writing to the stencil buffer
+
 
 		m_pCube->Render(m_gliTestProgram, m_pCamera);
 
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF); // write to areas where value is not equal to 1
 		glStencilMask(0x00); //disable writing to stencil buffer
 
-		m_pScaledCube->Render(m_gliTestProgram, m_pCamera);
+		if (StencilOn)
+			m_pScaledCube->Render(m_gliTestProgram, m_pCamera);
 
-		glStencilMask(0x00); //disable writing to stencil mask
+		//glStencilMask(0x00); //disable writing to stencil mask
+		//cout << glIsEnabled(GL_STENCIL_TEST);
 
 		glDisable(GL_STENCIL_TEST);
 	}
@@ -209,12 +226,100 @@ void cGameManager::UpdateCurrentLevel(float _deltaTime)
 
 void cGameManager::CheckInput()
 {
-	if (m_pInputManager->KeyState['r'] == InputState::INPUT_DOWN_FIRST)
+	//Restart/Switch level
+	if (m_pInputManager->KeyState['r'] == InputState::INPUT_DOWN_FIRST && RestartKeyPressed == false)
 	{
 		//Switch level
+		SwitchLevel();
+		RestartKeyPressed = true;
+	}
+	else if (m_pInputManager->KeyState['r'] == InputState::INPUT_UP_FIRST)
+	{
+		RestartKeyPressed = false;
 	}
 
-	if (m_pInputManager->KeyState['r'] == InputState::INPUT_DOWN_FIRST)
+	//Toggle Stencil
+	if (m_pInputManager->KeyState['t'] == InputState::INPUT_DOWN_FIRST && StencilKeyPressed == false)
+	{
+		ToggleStencilOutline();
+		StencilKeyPressed = true;
+	}
+	else if (m_pInputManager->KeyState['t'] == InputState::INPUT_UP_FIRST)
+	{
+		StencilKeyPressed = false;
+	}
+
+	//Toggle Scissor
+	if (m_pInputManager->KeyState['y'] == InputState::INPUT_DOWN_FIRST && ScissorKeyPressed == false)
+	{
+		ToggleScissor();
+		ScissorKeyPressed = true;
+	}
+	else if (m_pInputManager->KeyState['y'] == InputState::INPUT_UP_FIRST)
+	{
+		ScissorKeyPressed = false;
+	}
+
+
+
+
+}
+
+void cGameManager::ToggleStencilOutline()
+{
+	StencilOn = !StencilOn;
+
+	if (StencilOn)
+	{
+		glEnable(GL_STENCIL_TEST);
+	}
+	else
+	{
+		glClear(GL_STENCIL_BUFFER_BIT);
+		glDisable(GL_STENCIL_TEST);
+	}
+}
+
+void cGameManager::ToggleScissor()
+{
+	if (glIsEnabled(GL_SCISSOR_TEST))
+	{
+		//If on turn off
+		glDisable(GL_SCISSOR_TEST);
+		glScissor(0, 0, 600, 600);
+	}
+	else
+	{
+		//Else turn on
+		glClear(GL_COLOR_BUFFER_BIT);
+		glEnable(GL_SCISSOR_TEST);
+		glScissor(0, 50, 600, 500);
+	}
+}
+
+void cGameManager::CameraMove(float _deltaTime)
+{
+	//Move Camera
+	if (m_pInputManager->KeyState['w'] == InputState::INPUT_DOWN_FIRST)
+	{
+		//Forward
+		m_pCamera->MoveRelative(vec3(0.0f, 0.0f, CamSpeed * _deltaTime));
+	}
+	if (m_pInputManager->KeyState['s'] == InputState::INPUT_DOWN_FIRST)
+	{
+		//Back
+		m_pCamera->MoveRelative(vec3(0.0f, 0.0f, -CamSpeed * _deltaTime));
+	}
+	//if (m_pInputManager->KeyState['a'] == InputState::INPUT_DOWN_FIRST)
+	//{
+	//	//Left
+	//	m_pCamera->MoveRelative(vec3(-CamSpeed * _deltaTime, 0.0f, 0.0f));
+	//}
+	//if (m_pInputManager->KeyState['d'] == InputState::INPUT_DOWN_FIRST)
+	//{
+	//	//Right	
+	//	m_pCamera->MoveRelative(vec3(CamSpeed * _deltaTime, 0.0f, 0.0f));
+	//}
 }
 
 void cGameManager::SwitchLevel()

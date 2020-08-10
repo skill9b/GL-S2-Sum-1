@@ -27,8 +27,8 @@ int main(int argc, char** argv)
 	glutInitWindowSize(SCR_WIDTH, SCR_HEIGHT);
 	glutCreateWindow("3D Shooter");
 
-	
 	//Enable settings
+
 	//Black bars on top and bottom
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(0, 50, 600, 500);
@@ -36,7 +36,10 @@ int main(int argc, char** argv)
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glStencilMask(0x00); //disable writing to stencil mask
 
-
+	//Moved from render!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//glEnable(GL_STENCIL_TEST);
+	//glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	//glStencilMask(0x00); //disable writing to stencil buffer
 
 	glutSetOption(GLUT_MULTISAMPLE, 8);
 	glEnable(GL_MULTISAMPLE);
@@ -59,7 +62,7 @@ int main(int argc, char** argv)
 	}
 
 	//Sets the clear color
-	glClearColor(0.0f, 0.0f, 1.0f, 1.0f); //Black
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); //Black
 
 
 	GameManager.Initialise(0.0f);

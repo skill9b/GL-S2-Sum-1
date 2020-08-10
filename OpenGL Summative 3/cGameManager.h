@@ -22,6 +22,9 @@ public:
 	void SwitchLevel();
 	void ResetCurrentLevel();
 	void CheckInput();
+	void ToggleStencilOutline();
+	void ToggleScissor();
+	void CameraMove(float _deltaTime);
 
 private:
 	cMenu* m_pMainMenu;
@@ -39,7 +42,6 @@ private:
 	cEntity* m_pTransparentCube;
 	cEntity* m_pWater;
 
-
 	//Managers
 	cCamera* m_pCamera;
 	State m_CurrentState;
@@ -50,5 +52,23 @@ private:
 	GLuint m_gliReflectionProgram;
 	GLuint m_gliTestProgram;
 	bool IsFirstLevel;
+	float CamSpeed;
+
+	//Stencil 
+	bool StencilOn;
+	bool StencilKeyPressed;
+
+	//Scissor
+	bool ScissorKeyPressed;
+	bool ScissorDisabled;
+
+	//Switch Level/Restart
+	bool RestartKeyPressed;
+
+	//Back Bullng
+	bool BullKeyPressed;
+
+	//Antialiasing
+	bool AAKeyPressed;
 
 };

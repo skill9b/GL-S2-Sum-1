@@ -38,9 +38,12 @@ public:
 	mat4 GetPVMatrix();
 	vec3 GetCamPos();
 
+
 	//Set
 	void SetProjectionMatrix(mat4 _m4NewMatrix);
 	void SetViewMatrix(); //Calculates view matrix
+	void SetPosition(vec3 newPosition);
+	void MoveRelative(vec3 Translation);
 
 	void Update(float _deltaTime);
 };

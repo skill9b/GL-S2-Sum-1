@@ -54,6 +54,16 @@ void cCamera::SetViewMatrix()
 	m_m4View = lookAt(m_v3Position, m_v3LookDirection, m_v3UpDirection);
 }
 
+void cCamera::SetPosition(vec3 newPosition)
+{
+	m_v3Position = newPosition;
+}
+
+void cCamera::MoveRelative(vec3 Translation)
+{
+	SetPosition(Translation + GetCamPos());
+}
+
 void cCamera::Update(float _deltaTime)
 {
 	//Update matrices
