@@ -183,17 +183,15 @@ void cGameManager::RenderCurrentLevel()
 		glStencilFunc(GL_ALWAYS, 1, 0xFF); 
 		glStencilMask(0xFF); // enable writing to the stencil buffer
 
-
 		m_pCube->Render(m_gliTestProgram, m_pCamera);
 
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF); // write to areas where value is not equal to 1
 		glStencilMask(0x00); //disable writing to stencil buffer
 
 		if (StencilOn)
+		{
 			m_pScaledCube->Render(m_gliTestProgram, m_pCamera);
-
-		//glStencilMask(0x00); //disable writing to stencil mask
-		//cout << glIsEnabled(GL_STENCIL_TEST);
+		}
 
 		glDisable(GL_STENCIL_TEST);
 	}
@@ -209,12 +207,8 @@ void cGameManager::UpdateCurrentLevel(float _deltaTime)
 {
 	if (IsFirstLevel)
 	{
-
 		m_pCube->Update(_deltaTime);
-
 		m_pScaledCube->Update(_deltaTime);
-
-
 	}
 	else
 	{
