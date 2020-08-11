@@ -16,6 +16,7 @@ public:
 	void Render();
 	cInput* GetInputManager();
 	cEntity* InitialiseCube(string filedir);
+	cEntity* InitialiseQuad(string filedir);
 
 	void RenderCurrentLevel();
 	void UpdateCurrentLevel(float _deltaTime);
@@ -25,6 +26,7 @@ public:
 	void ToggleStencilOutline();
 	void ToggleScissor();
 	void CameraMove(float _deltaTime);
+
 
 private:
 	cMenu* m_pMainMenu;

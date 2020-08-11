@@ -53,7 +53,7 @@ cGameManager::~cGameManager()
 void cGameManager::Initialise(float _deltaTime)
 {
 	//Initilise member variables
-	m_pLevelOne->Initialise(m_pCamera);
+	//m_pLevelOne->Initialise(m_pCamera);
 	m_pMainMenu->Initialise();
 	m_pCamera->Initialise(SCR_WIDTH, SCR_HEIGHT, 10000.0f, 0.1f);
 	m_pCubeMap = new cCubeMap(m_pCamera);
@@ -64,9 +64,9 @@ void cGameManager::Initialise(float _deltaTime)
 	m_pScaledCube->SetScale(vec3(1.0f, 1.0f, 1.0f), 1.2f);
 
 	m_pTransparentCube = InitialiseCube("Resources/Textures/TransparentCube.png");
-	m_pWater = InitialiseCube("Resources/Textures/Water.png");
-	m_pWater->SetScale(vec3(8.0f, 1.0f, 8.0f), 2.0f);
-	m_pWater->SetTranslation(m_pWater->GetTranslate() - vec3(0.0f, 1.0f, 0.0f));
+	m_pWater = InitialiseQuad("Resources/Textures/Water.png");
+	m_pWater->SetScale(vec3(2.0f, 1.0f, 2.0f), 1.0f);
+	m_pWater->SetTranslation(m_pWater->GetTranslate() + vec3(0.0f, 0.25f, 0.0f));
 
 	//Program
 	m_gliReflectionProgram = ShaderLoader::CreateProgram("Resources/Shaders/Reflection.vs",
@@ -202,7 +202,6 @@ void cGameManager::RenderCurrentLevel()
 		//Add fog shader code and make new program
 		m_pTransparentCube->Render(m_gliTestProgram, m_pCamera);
 		m_pWater->Render(m_gliTestProgram, m_pCamera);
-
 	}
 }
 
@@ -219,8 +218,8 @@ void cGameManager::UpdateCurrentLevel(float _deltaTime)
 	}
 	else
 	{
-		m_pTransparentCube->Update(_deltaTime);
 		m_pWater->Update(_deltaTime);
+		m_pTransparentCube->Update(_deltaTime);
 	}
 }
 
@@ -370,7 +369,7 @@ void cGameManager::ResetCurrentLevel()
 
 cEntity* cGameManager::InitialiseCube(string filedir)
 {
-	cBullet* m_pCube = new cBullet();
+	cEntity* m_pCube = new cEntity();
 
 	//Sprite parameters
 	float CubeFrames = 12.0f;
@@ -587,6 +586,66 @@ cEntity* cGameManager::InitialiseCube(string filedir)
 		v3CubeScale, fCubeScaleFactor, CubeFPS, CubeWidth, CubeHeight);
 
 	return m_pCube;
+}
+
+cEntity* cGameManager::InitialiseQuad(string filedir)
+{
+	cEntity* Quad = new cEntity();
+
+	int QuadFPS = 1;
+	vector <Vertex2D> vecQuadRectVertices;
+
+	float QuadWidth = 10.0f;
+	float QuadHeight = 10.0f;
+
+	Vertex2D Quadv1;
+	Quadv1.Position = vec3(-QuadWidth, 0.0f, QuadHeight);
+	Quadv1.Color = vec3(0.0f, 1.0f, 0.0f);
+	Quadv1.TexCoords = vec2(0.0f, 0.0f);
+
+	Vertex2D Quadv2;
+	Quadv2.Position = vec3(-QuadHeight, 0.0f, -QuadWidth);
+	Quadv2.Color = vec3(1.0f, 0.0f, 0.0f);
+	Quadv2.TexCoords = vec2(0.0f, 1.0f);
+
+	Vertex2D Quadv3;
+	Quadv3.Position = vec3(QuadHeight, 0.0f, -QuadHeight);
+	Quadv3.Color = vec3(1.0f, 1.0f, 0.0f);
+	Quadv3.TexCoords = vec2(1.0f, 1.0f);
+
+	Vertex2D Quadv4;
+	Quadv4.Position = vec3(QuadHeight, 0.0f, QuadWidth);
+	Quadv4.Color = vec3(0.0f, 0.0f, 1.0f);
+	Quadv4.TexCoords = vec2(1.0f, 0.0f);
+
+	vecQuadRectVertices.push_back(Quadv1);
+	vecQuadRectVertices.push_back(Quadv2);
+	vecQuadRectVertices.push_back(Quadv3);
+	vecQuadRectVertices.push_back(Quadv4);
+
+	vector <GLuint > vecQuadRectIndices;
+
+	vecQuadRectIndices.push_back(0);
+	vecQuadRectIndices.push_back(1);
+	vecQuadRectIndices.push_back(2);
+	vecQuadRectIndices.push_back(0);
+	vecQuadRectIndices.push_back(2);
+	vecQuadRectIndices.push_back(3);
+
+	string strQuadImage = filedir;
+	vec3 v3QuadRotation = vec3(0.0f, 0.0f, 1.0f);
+	int fQuadFrames = 12;
+
+	vec3 v3QuadTranslation = vec3(0.0f, 0.0f, 0.0f);
+	float fQuadRotAngle = 0.0f;
+	vec3 v3QuadScale = vec3(1.0f, 1.0f, 1.0f);
+	float fQuadScaleFactor = 1.0f;
+
+	Quad->Intitialise(vecQuadRectVertices, vecQuadRectIndices, fQuadFrames, strQuadImage,
+		v3QuadTranslation, v3QuadRotation, fQuadRotAngle,
+		v3QuadScale, fQuadScaleFactor, QuadFPS, QuadWidth, QuadHeight);
+
+	return Quad;
 }
 
 
