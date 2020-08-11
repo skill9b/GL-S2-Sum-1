@@ -64,6 +64,11 @@ vec3 cEntity::GetTranslate()
 	return m_v3Position;
 }
 
+cMesh* cEntity::GetMesh()
+{
+	return m_pMesh;
+}
+
 void cEntity::Update(float _deltaTime)
 {
 	SetModelMatrix();

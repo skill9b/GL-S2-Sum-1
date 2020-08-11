@@ -40,6 +40,7 @@ public:
 	mat4 GetScale();
 	mat4 GetModel();
     vec3 GetTranslate();
+    cMesh* GetMesh();
  
     void Update(float _deltaTime);
     void Render(GLuint _program, cCamera* _camera);

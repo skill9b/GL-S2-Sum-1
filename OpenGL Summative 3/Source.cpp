@@ -13,6 +13,9 @@ void Render();
 void Update();
 void KeyboardUpCallback(unsigned char _key, int x, int y);
 void KeyboardDownCallback(unsigned char _key, int x, int y);
+void MousePassiveCallback(int x, int y);
+void MouseMoveCallback(int x, int y);
+void MouseClickCallback(int button, int state, int x, int y);
 
 int main(int argc, char** argv)
 {
@@ -79,6 +82,9 @@ int main(int argc, char** argv)
 
 	glutKeyboardFunc(KeyboardDownCallback);
 	glutKeyboardUpFunc(KeyboardUpCallback);
+	glutMouseFunc(MouseClickCallback);
+	glutMotionFunc(MouseMoveCallback);
+	glutPassiveMotionFunc(MousePassiveCallback);
 
 	glutMainLoop(); //Ensure this is the last glut line called
 
@@ -112,4 +118,17 @@ void KeyboardUpCallback(unsigned char _key, int x, int y)
 	GameManager.GetInputManager()->KeyboardUp(_key, x, y);
 }
 
+void MousePassiveCallback(int x, int y)
+{
+	GameManager.GetInputManager()->MousePassiveMove(x, y);
+}
 
+void MouseClickCallback(int button, int state, int x, int y) 
+{
+	GameManager.GetInputManager()->MouseClick(button, state, x, y);
+}
+
+void MouseMoveCallback(int x, int y)
+{
+	GameManager.GetInputManager()->MouseMove(x, y);
+}

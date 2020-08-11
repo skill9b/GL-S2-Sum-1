@@ -26,7 +26,8 @@ public:
 	void ToggleStencilOutline();
 	void ToggleScissor();
 	void CameraMove(float _deltaTime);
-
+	void MousePick();
+	bool RayEntityIntersect(cEntity* Object);
 
 private:
 	cMenu* m_pMainMenu;
@@ -43,6 +44,9 @@ private:
 	//Level Two
 	cEntity* m_pTransparentCube;
 	cEntity* m_pWater;
+	cEntity* m_pCamForwardButton;
+	cEntity* m_pCamBackwardButton;
+
 
 	//Managers
 	cCamera* m_pCamera;

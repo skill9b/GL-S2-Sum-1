@@ -1,4 +1,5 @@
 #include "cGameManager.h"
+#include <gtx/intersect.hpp>
 
 cGameManager::cGameManager()
 {
@@ -82,50 +83,12 @@ void cGameManager::Update(float _deltaTime)
 {
 	//Update persistant objects	
 	CameraMove(_deltaTime);
+	MousePick();
 	m_pCamera->Update(_deltaTime);
 	m_pCubeMap->Update();
 	CheckInput();
-	
-
-	//m_pLevelOne->Update(_deltaTime, m_pInputManager, m_pCamera);
 	UpdateCurrentLevel(_deltaTime);
-	/*switch (m_CurrentState)
-	{
-	case State::Menu:	//If in menu
-		{
-			m_pMainMenu->Update(m_pInputManager);
-			m_CurrentState = m_pMainMenu->GetSelectedLevel();
-		}
-		break;
-
-	case State::InGame:  //If in game
-		{
-			m_pLevelOne->Update(_deltaTime, m_pInputManager, m_pCamera);
-			if (m_pLevelOne->GetInGameState())
-			{
-				m_CurrentState = State::Restart;
-			}
-		}
-		break;
-
-	case State::Restart:
-		{
-			//Reset level and set state to menu
-			m_pMainMenu->ResetSelectedLevel();
-			delete m_pLevelOne;
-			m_pLevelOne = 0;
-			m_pLevelOne = new cLevel();
-			m_pLevelOne->RestartGame();
-			m_pLevelOne->Initialise(m_pCamera);
-			m_CurrentState = State::Menu;
-		}
-		break;
-	default:
-		break;
-	}*/
-
 	
-
 	glutPostRedisplay();
 }
 
@@ -137,30 +100,6 @@ void cGameManager::Render()
 	m_pCubeMap->Render();
 
 	RenderCurrentLevel();
-
-	/*switch (m_CurrentState)
-	{
-	case State::Menu: //Render menu
-	{
-		m_pMainMenu->Render();
-	}
-	break;
-
-	case State::InGame: //Render game
-	{
-		m_pLevelOne->Render(m_pCamera, m_gliReflectionProgram, m_pCubeMap);
-	}
-	break;
-
-	case State::Restart: //Render end game
-	{
-		m_pLevelOne->Render(m_pCamera, m_gliReflectionProgram, m_pCubeMap);
-	}
-	break;
-
-	default:
-		break;
-	}*/
 
 	glutSwapBuffers();
 }
@@ -313,6 +252,68 @@ void cGameManager::CameraMove(float _deltaTime)
 	//	//Right	
 	//	m_pCamera->MoveRelative(vec3(CamSpeed * _deltaTime, 0.0f, 0.0f));
 	//}
+}
+
+void cGameManager::MousePick()
+{
+	//2 Buttons, first makes camera go forward, other backward
+	if (m_pInputManager->IsMouseClicked(0))
+	{
+		if (RayEntityIntersect(m_pTransparentCube))
+		{
+			//Move cam forward
+			cout << "forward" << endl;
+		}
+		//else if (RayEntityIntersect(m_pCamBackwardButton))
+		//{
+		//	cout << "Backward" << endl;
+		//}
+	}
+}
+
+bool cGameManager::RayEntityIntersect(cEntity* Object)
+{
+	bool Intersect = false;
+	glm::vec3 rayDirection = vec3(0.0f, 0.0f, 0.0f);
+
+	//screen pos
+	glm::vec2 normalizedScreenPos = m_pInputManager->GetMouseCoords();
+	//screenpos to Proj Space
+	glm::vec4 clipCoords = glm::vec4(normalizedScreenPos.x, normalizedScreenPos.y, -1.0f, 1.0f);
+
+	//Proj Space to eye space
+	glm::mat4 invProjMat = glm::inverse(m_pCamera->GetProjectionMatrix());
+	glm::vec4 eyeCoords = invProjMat * clipCoords;
+	eyeCoords = glm::vec4(eyeCoords.x, eyeCoords.y, -1.0f, 0.0f);
+
+	//eyespace to world space
+	glm::mat4 invViewMat = glm::inverse(m_pCamera->GetViewMatrix());
+	glm::vec4 rayWorld = invViewMat * eyeCoords;
+	rayDirection = glm::normalize(glm::vec3(rayWorld));
+
+
+	for (int i = 0; i < Object->GetMesh()->GetIndices().size(); i+=3)
+	{
+		vec3 vec3CamPos = m_pCamera->GetCamPos();
+		vec3 vec3Point1 = Object->GetMesh()->GetVertices().at(Object->GetMesh()->GetIndices().at(i)).Position;
+		vec3 vec3Point2 = Object->GetMesh()->GetVertices().at(Object->GetMesh()->GetIndices().at(i+1)).Position;
+		vec3 vec3Point3 = Object->GetMesh()->GetVertices().at(Object->GetMesh()->GetIndices().at(i+2)).Position;
+		vec3 IntersectPoint = vec3(0.0f, 0.0f, 0.0f);
+		float something = 0.0f;
+
+		if (glm::intersectRayTriangle(vec3CamPos, rayDirection, vec3Point1, vec3Point2, vec3Point3, IntersectPoint))
+		{
+			Intersect = true;
+		}
+
+		//if (glm::intersectRaySphere(vec3CamPos, glm::normalize(rayDirection), Object->GetTranslate(), 5.0f, something))
+		//{
+		//	Intersect = true;
+		//}
+
+	}
+	
+	return Intersect;
 }
 
 void cGameManager::SwitchLevel()

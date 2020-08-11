@@ -75,6 +75,11 @@ vector<GLuint> cMesh::GetIndices()
     return m_vecIndices;
 }
 
+vector<Vertex2D> cMesh::GetVertices()
+{
+	return m_vecVertices;
+}
+
 cSprite* cMesh::GetSprite()
 {
     return m_pSprite;

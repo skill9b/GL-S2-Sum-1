@@ -27,6 +27,7 @@ public:
 	void InitialiseMesh(vector<Vertex2D> _vertices, vector<GLuint> _indices);
 	GLuint GetVAO();
 	vector<GLuint> GetIndices();
+	vector<Vertex2D> GetVertices();
 	cSprite* GetSprite();
 
 

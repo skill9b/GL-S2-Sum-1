@@ -58,8 +58,11 @@ void cInput::MouseClick(int button, int state, int x, int y)
 void cInput::MousePassiveMove(int x, int y)
 {
 	//Offset mouse pos to start from centre and not top left
-	m_v2MouseCoords.x = (float)x - (float)(SCR_WIDTH * 0.5f);
-	m_v2MouseCoords.y = -((float)y - (float)(SCR_HEIGHT * 0.5f));
+	//m_v2MouseCoords.x = (float)x - (float)(SCR_WIDTH * 0.5f);
+	//m_v2MouseCoords.y = -((float)y - (float)(SCR_HEIGHT * 0.5f));
+
+	m_v2MouseCoords.x = (2.0f * x) / (float)SCR_WIDTH - 1.0f;
+	m_v2MouseCoords.y = 1.0f - (2.0f * y) / (float)SCR_HEIGHT;
 }
 
 void cInput::MouseMove(int x, int y)
