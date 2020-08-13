@@ -20,21 +20,22 @@ public:
 
 	void RenderCurrentLevel();
 	void UpdateCurrentLevel(float _deltaTime);
-	void SwitchLevel();
-	void ResetCurrentLevel();
-	void CheckInput();
+	void SwitchLevel(float _deltaTime);
+	void ResetCurrentLevel(float _deltaTime);
+	void CheckInput(float _deltaTime);
 	void ToggleStencilOutline();
 	void ToggleScissor();
 	void CameraMove(float _deltaTime);
-	void MousePick();
+	void MousePick(float _deltaTime);
 	bool RayEntityIntersect(cEntity* Object);
+	bool ToggleCull();
+	bool ToggleWireFrame();
 
 private:
 	cMenu* m_pMainMenu;
 	cLevel* m_pLevelOne;
 	
 	///Objects
-	cEntity* m_pBackground;
 	cCubeMap* m_pCubeMap;
 
 	//Level One
@@ -55,7 +56,7 @@ private:
 
 	//Utility
 	float m_fScreenWidth, m_fScreenHeight;
-	GLuint m_gliReflectionProgram;
+	GLuint m_gliBasicProgram;
 	GLuint m_gliTestProgram;
 	bool IsFirstLevel;
 	float CamSpeed;
@@ -71,10 +72,10 @@ private:
 	//Switch Level/Restart
 	bool RestartKeyPressed;
 
-	//Back Bullng
-	bool BullKeyPressed;
+	//Back Cullng
+	bool CullKeyPressed;
 
 	//Antialiasing
-	bool AAKeyPressed;
+	bool WireKeyPressed;
 
 };

@@ -11,7 +11,7 @@ uniform sampler2D tex2;
 
 uniform vec3 camPos;
 float d = distance(mWorldPos.xyz, camPos);
-float lerp = (d - 5.0f) / 50.f;
+float lerp = (d - 5.0f) / 20.f;
 vec4 vFogColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 void main()

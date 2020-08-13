@@ -28,6 +28,7 @@ private:
     cCamera* m_pCamera;
 
     glm::mat4 m_m4MVP;
+    glm::mat4 m_m4Model;
 
     GLuint m_gluiVAO;
     GLuint m_gluiEBO;

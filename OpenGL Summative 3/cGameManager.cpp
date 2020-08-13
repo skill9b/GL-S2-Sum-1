@@ -8,7 +8,6 @@ cGameManager::cGameManager()
 	m_pMainMenu = new cMenu();
 	m_pLevelOne = new cLevel();
 	m_pCamera = new cCamera();
-	m_pBackground = new cEntity();
 	m_pCubeMap = 0;
 
 
@@ -17,14 +16,14 @@ cGameManager::cGameManager()
 	m_pWater = new cEntity();
 
 
-	m_gliReflectionProgram = 0;
+	m_gliBasicProgram = 0;
 	m_gliTestProgram = 0;
 	m_fScreenWidth = SCR_WIDTH;
 	m_fScreenHeight = SCR_HEIGHT;
 
-	CamSpeed = 50.0f;
+	CamSpeed = 25.0f;
 	IsFirstLevel = false;
-	StencilOn = false;
+	StencilOn = true;
 	StencilKeyPressed = false;
 	ScissorKeyPressed = false;
 	RestartKeyPressed = false;
@@ -55,38 +54,97 @@ void cGameManager::Initialise(float _deltaTime)
 {
 	//Initilise member variables
 	//m_pLevelOne->Initialise(m_pCamera);
-	m_pMainMenu->Initialise();
+	//m_pMainMenu->Initialise();
 	m_pCamera->Initialise(SCR_WIDTH, SCR_HEIGHT, 10000.0f, 0.1f);
 	m_pCubeMap = new cCubeMap(m_pCamera);
 
 
 	m_pCube = InitialiseCube("Resources/Textures/YellowCube.png");
+	m_pCube->SetTranslation(m_pCube->GetTranslate() + vec3 (0.0f, 2.0f, 0.0f));
 	m_pScaledCube = InitialiseCube("Resources/Textures/RedOutline.png");
 	m_pScaledCube->SetScale(vec3(1.0f, 1.0f, 1.0f), 1.2f);
+	m_pScaledCube->SetTranslation(m_pCube->GetTranslate());
+
 
 	m_pTransparentCube = InitialiseCube("Resources/Textures/TransparentCube.png");
-	m_pWater = InitialiseQuad("Resources/Textures/Water.png");
-	m_pWater->SetScale(vec3(2.0f, 1.0f, 2.0f), 1.0f);
-	m_pWater->SetTranslation(m_pWater->GetTranslate() + vec3(0.0f, 0.25f, 0.0f));
+	m_pWater = InitialiseCube("Resources/Textures/Water.png");
+	//m_pWater->SetScale(vec3(2.0f, 1.0f, 2.0f), 1.0f);
+	m_pWater->SetTranslation(m_pTransparentCube->GetTranslate() + vec3(0.0f, 1.0f, 0.0f));
+
+	m_pCamForwardButton = InitialiseCube("Resources/Textures/ForwardArrow.png");
+	m_pCamForwardButton->SetTranslation(vec3(5.0f, 0.0f, 0.0f));
+
+	m_pCamBackwardButton = InitialiseCube("Resources/Textures/BackwardArrow.png");
+	m_pCamBackwardButton->SetTranslation(vec3(-5.0f, 0.0f, 0.0f));
 
 	//Program
-	m_gliReflectionProgram = ShaderLoader::CreateProgram("Resources/Shaders/Reflection.vs",
-		"Resources/Shaders/Reflection.fs");
+	m_gliBasicProgram = ShaderLoader::CreateProgram("Resources/Shaders/Basic.vs",
+		"Resources/Shaders/Basic.fs");
 
 	m_gliTestProgram = ShaderLoader::CreateProgram("Resources/Shaders/Fog.vs",
 		"Resources/Shaders/Fog.fs");
 
 	Update(_deltaTime);
 }
+void cGameManager::ResetCurrentLevel(float _deltaTime)
+{
+	//Reset current level objects
+	//if (!IsFirstLevel)
+	//{
+	//	//Destroy
+	//	m_pCube->~cEntity();
+	//	m_pScaledCube->~cEntity();
+	//
+	//	//Re-create
+	//	m_pCube = new cEntity();
+	//	m_pScaledCube = new cEntity();
+	//	m_pWater = new cEntity();
+	//
+	//	//Initialise
+	//	m_pCube = InitialiseCube("Resources/Textures/TransparentCube.png");
+	//	m_pScaledCube = InitialiseCube("Resources/Textures/RedOutline.png");
+	//	m_pScaledCube->SetScale(vec3(1.0f, 1.0f, 1.0f), 1.1f);
+	//}
+	//else
+	//{
+		//Destroy
+		//m_pTransparentCube->~cEntity();
+		//m_pWater->~cEntity();
+		//m_pCamBackwardButton->~cEntity();
+		//m_pCamForwardButton->~cEntity();
 
+		//Re-create
+		//m_pTransparentCube = new cEntity();
+		//m_pWater = new cEntity();
+		//m_pCamForwardButton = new cEntity();
+		//m_pCamBackwardButton = new cEntity();
+
+		//Initialise
+		m_pTransparentCube = InitialiseCube("Resources/Textures/TransparentCube.png");
+
+		//m_pWater = InitialiseCube("Resources/Textures/Water.png");
+		//m_pWater->SetTranslation(m_pTransparentCube->GetTranslate() - vec3(0.0f, 1.0f, 0.0f));
+
+		//m_pCamForwardButton = InitialiseCube("Resources/Textures/ForwardArrow.png");
+		m_pCamForwardButton->SetTranslation(vec3(5.0f, 0.0f, 0.0f));
+
+		//m_pCamBackwardButton = InitialiseCube("Resources/Textures/BackwardArrow.png");
+		m_pCamBackwardButton->SetTranslation(vec3(-5.0f, 0.0f, 0.0f));
+	//}
+
+	glStencilMask(0xFF); //enable writing to stencil buffer
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glStencilMask(0x00); //disable writing to stencil buffer
+}
 void cGameManager::Update(float _deltaTime)
 {
+
 	//Update persistant objects	
 	CameraMove(_deltaTime);
-	MousePick();
+	MousePick(_deltaTime);
 	m_pCamera->Update(_deltaTime);
 	m_pCubeMap->Update();
-	CheckInput();
+	CheckInput(_deltaTime);
 	UpdateCurrentLevel(_deltaTime);
 	
 	glutPostRedisplay();
@@ -94,10 +152,11 @@ void cGameManager::Update(float _deltaTime)
 
 void cGameManager::Render()
 {
+	glStencilMask(0xFF); //enable writing to stencil buffer
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glStencilMask(0x00); //disable writing to stencil buffer
 
-	//Render persistant objects
-	m_pCubeMap->Render();
+	//m_pCubeMap->Render();
 
 	RenderCurrentLevel();
 
@@ -115,9 +174,19 @@ void cGameManager::RenderCurrentLevel()
 	{
 		glDisable(GL_SCISSOR_TEST);
 	}
-
-	if (IsFirstLevel)
+	else
 	{
+		//Clear buffer
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); //Black
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glEnable(GL_SCISSOR_TEST);
+		glScissor(0, 50, 600, 500);
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f); //Black
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	}
+
+	//if (IsFirstLevel)
+	//{
 		glEnable(GL_STENCIL_TEST);
 		glStencilFunc(GL_ALWAYS, 1, 0xFF); 
 		glStencilMask(0xFF); // enable writing to the stencil buffer
@@ -133,36 +202,41 @@ void cGameManager::RenderCurrentLevel()
 		}
 
 		glDisable(GL_STENCIL_TEST);
-	}
-	else
-	{
+	//}
+	//else
+	//{
 		//Add fog shader code and make new program
+		m_pCamForwardButton->Render(m_gliTestProgram, m_pCamera);
+		m_pCamBackwardButton->Render(m_gliTestProgram, m_pCamera);
+		
 		m_pTransparentCube->Render(m_gliTestProgram, m_pCamera);
 		m_pWater->Render(m_gliTestProgram, m_pCamera);
-	}
+	//}
 }
 
 void cGameManager::UpdateCurrentLevel(float _deltaTime)
 {
-	if (IsFirstLevel)
-	{
+	//if (IsFirstLevel)
+	//{
 		m_pCube->Update(_deltaTime);
 		m_pScaledCube->Update(_deltaTime);
-	}
-	else
-	{
+	//}
+	//else
+	//{
+		m_pCamForwardButton->Update(_deltaTime);
+		m_pCamBackwardButton->Update(_deltaTime);
 		m_pWater->Update(_deltaTime);
 		m_pTransparentCube->Update(_deltaTime);
-	}
+	//}
 }
 
-void cGameManager::CheckInput()
+void cGameManager::CheckInput(float _deltaTime)
 {
 	//Restart/Switch level
 	if (m_pInputManager->KeyState['r'] == InputState::INPUT_DOWN_FIRST && RestartKeyPressed == false)
 	{
 		//Switch level
-		SwitchLevel();
+		SwitchLevel(_deltaTime);
 		RestartKeyPressed = true;
 	}
 	else if (m_pInputManager->KeyState['r'] == InputState::INPUT_UP_FIRST)
@@ -192,9 +266,27 @@ void cGameManager::CheckInput()
 		ScissorKeyPressed = false;
 	}
 
+	//Toggle Wireframe
+	if (m_pInputManager->KeyState['u'] == InputState::INPUT_DOWN_FIRST && WireKeyPressed == false)
+	{
+		//ToggleScissor();
+		WireKeyPressed = true;
+	}
+	else if (m_pInputManager->KeyState['u'] == InputState::INPUT_UP_FIRST)
+	{
+		WireKeyPressed = false;
+	}
 
-
-
+	//Toggle Backface culling
+	if (m_pInputManager->KeyState['i'] == InputState::INPUT_DOWN_FIRST && CullKeyPressed == false)
+	{
+		//ToggleScissor();
+		CullKeyPressed = true;
+	}
+	else if (m_pInputManager->KeyState['i'] == InputState::INPUT_UP_FIRST)
+	{
+		CullKeyPressed = false;
+	}
 }
 
 void cGameManager::ToggleStencilOutline()
@@ -214,19 +306,21 @@ void cGameManager::ToggleStencilOutline()
 
 void cGameManager::ToggleScissor()
 {
-	if (glIsEnabled(GL_SCISSOR_TEST))
-	{
-		//If on turn off
-		glDisable(GL_SCISSOR_TEST);
-		glScissor(0, 0, 600, 600);
-	}
-	else
-	{
-		//Else turn on
-		glClear(GL_COLOR_BUFFER_BIT);
-		glEnable(GL_SCISSOR_TEST);
-		glScissor(0, 50, 600, 500);
-	}
+	ScissorDisabled = !ScissorDisabled;
+
+	//if (glIsEnabled(GL_SCISSOR_TEST))
+	//{
+	//	//If on turn off
+	//	glDisable(GL_SCISSOR_TEST);
+	//	glScissor(0, 0, 600, 600);
+	//}
+	//else
+	//{
+	//	//Else turn on
+	//	glClear(GL_COLOR_BUFFER_BIT);
+	//	glEnable(GL_SCISSOR_TEST);
+	//	glScissor(0, 50, 600, 500);
+	//}
 }
 
 void cGameManager::CameraMove(float _deltaTime)
@@ -254,27 +348,26 @@ void cGameManager::CameraMove(float _deltaTime)
 	//}
 }
 
-void cGameManager::MousePick()
+void cGameManager::MousePick(float _deltaTime)
 {
-	//2 Buttons, first makes camera go forward, other backward
 	if (m_pInputManager->IsMouseClicked(0))
 	{
-		if (RayEntityIntersect(m_pTransparentCube))
+		if (RayEntityIntersect(m_pCamForwardButton))
 		{
 			//Move cam forward
-			cout << "forward" << endl;
+			m_pCamera->MoveRelative(vec3(0.0f, 0.0f, CamSpeed * _deltaTime));
 		}
-		//else if (RayEntityIntersect(m_pCamBackwardButton))
-		//{
-		//	cout << "Backward" << endl;
-		//}
+		if (RayEntityIntersect(m_pCamBackwardButton))
+		{
+			m_pCamera->MoveRelative(vec3(0.0f, 0.0f, -CamSpeed * _deltaTime));
+		}
 	}
 }
 
 bool cGameManager::RayEntityIntersect(cEntity* Object)
 {
 	bool Intersect = false;
-	glm::vec3 rayDirection = vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 vec3rayDirection = vec3(0.0f, 0.0f, 0.0f);
 
 	//screen pos
 	glm::vec2 normalizedScreenPos = m_pInputManager->GetMouseCoords();
@@ -289,78 +382,47 @@ bool cGameManager::RayEntityIntersect(cEntity* Object)
 	//eyespace to world space
 	glm::mat4 invViewMat = glm::inverse(m_pCamera->GetViewMatrix());
 	glm::vec4 rayWorld = invViewMat * eyeCoords;
-	rayDirection = glm::normalize(glm::vec3(rayWorld));
+	vec3rayDirection = glm::normalize(glm::vec3(rayWorld));
 
+	vec3 vec3CamPos = m_pCamera->GetCamPos();
 
 	for (int i = 0; i < Object->GetMesh()->GetIndices().size(); i+=3)
 	{
-		vec3 vec3CamPos = m_pCamera->GetCamPos();
-		vec3 vec3Point1 = Object->GetMesh()->GetVertices().at(Object->GetMesh()->GetIndices().at(i)).Position;
-		vec3 vec3Point2 = Object->GetMesh()->GetVertices().at(Object->GetMesh()->GetIndices().at(i+1)).Position;
-		vec3 vec3Point3 = Object->GetMesh()->GetVertices().at(Object->GetMesh()->GetIndices().at(i+2)).Position;
-		vec3 IntersectPoint = vec3(0.0f, 0.0f, 0.0f);
-		float something = 0.0f;
+		vec4 vec4Point1 = Object->GetModel() * vec4(Object->GetMesh()->GetVertices().at(Object->GetMesh()->GetIndices().at(i)).Position, 1.0f);
+		vec4 vec4Point2 = Object->GetModel() * vec4(Object->GetMesh()->GetVertices().at(Object->GetMesh()->GetIndices().at(i + 1)).Position, 1.0f);
+		vec4 vec4Point3 = Object->GetModel() * vec4(Object->GetMesh()->GetVertices().at(Object->GetMesh()->GetIndices().at(i + 2)).Position, 1.0f);
 
-		if (glm::intersectRayTriangle(vec3CamPos, rayDirection, vec3Point1, vec3Point2, vec3Point3, IntersectPoint))
+
+		vec3 IntersectPoint = vec3(0.0f, 0.0f, 0.0f);
+
+		if (glm::intersectRayTriangle(vec3CamPos, vec3rayDirection, vec3(vec4Point1), vec3(vec4Point2), vec3(vec4Point3), IntersectPoint))
 		{
 			Intersect = true;
 		}
-
-		//if (glm::intersectRaySphere(vec3CamPos, glm::normalize(rayDirection), Object->GetTranslate(), 5.0f, something))
-		//{
-		//	Intersect = true;
-		//}
-
 	}
 	
 	return Intersect;
 }
 
-void cGameManager::SwitchLevel()
+bool cGameManager::ToggleCull()
 {
-	ResetCurrentLevel();
+	return false;
+}
+
+bool cGameManager::ToggleWireFrame()
+{
+	return false;
+}
+
+void cGameManager::SwitchLevel(float _deltaTime)
+{
+	ResetCurrentLevel(_deltaTime);
 
 	//Switch state
 	IsFirstLevel = !IsFirstLevel;
-
 }
 
-void cGameManager::ResetCurrentLevel()
-{
-	//Reset current level objects
-	if (IsFirstLevel)
-	{
-		//Destroy
-		m_pCube->~cEntity();
-		m_pScaledCube->~cEntity();
 
-		//Re-create
-		m_pCube = new cEntity();
-		m_pScaledCube = new cEntity();
-		m_pWater = new cEntity();
-
-		//Initialise
-		m_pCube = InitialiseCube("Resources/Textures/TransparentCube.png");
-		m_pScaledCube = InitialiseCube("Resources/Textures/RedOutline.png");
-		m_pScaledCube->SetScale(vec3(1.0f, 1.0f, 1.0f), 1.1f);
-	}
-	else
-	{
-		//Destroy
-		m_pTransparentCube->~cEntity();
-		m_pWater->~cEntity();
-
-		//Re-create
-		m_pTransparentCube = new cEntity();
-		m_pWater = new cEntity();
-
-		//Initialise
-		m_pTransparentCube = InitialiseCube("Resources/Textures/TransparentCube.png");
-		m_pWater = InitialiseCube("Resources/Textures/Water.png");
-		m_pWater->SetScale(vec3(8.0f, 1.0f, 8.0f), 2.0f);
-		m_pWater->SetTranslation(m_pWater->GetTranslate() - vec3(0.0f, 1.0f, 0.0f));
-	}
-}
 
 cEntity* cGameManager::InitialiseCube(string filedir)
 {
@@ -590,8 +652,8 @@ cEntity* cGameManager::InitialiseQuad(string filedir)
 	int QuadFPS = 1;
 	vector <Vertex2D> vecQuadRectVertices;
 
-	float QuadWidth = 10.0f;
-	float QuadHeight = 10.0f;
+	float QuadWidth = 1.0f;
+	float QuadHeight = 1.0f;
 
 	Vertex2D Quadv1;
 	Quadv1.Position = vec3(-QuadWidth, 0.0f, QuadHeight);

@@ -13,7 +13,8 @@ glm::vec2 cInput::GetClickedCoords()
 bool cInput::IsMouseClicked(int _button)
 {
 	//Only register first click
-	if ((MouseState[_button] == InputState::INPUT_DOWN) && (m_bFirstClick))
+	//if ((MouseState[_button] == InputState::INPUT_DOWN) && (m_bFirstClick))
+	if ((MouseState[_button] == InputState::INPUT_DOWN))
 	{
 		m_bFirstClick = false;
 		return true;

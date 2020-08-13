@@ -137,8 +137,8 @@ cCubeMap::~cCubeMap()
 
 void cCubeMap::Update()
 {
-	glm::mat4 model = glm::scale(glm::mat4(), glm::vec3(200.0f, 200.0f, 200.0f));
-	m_m4MVP = m_pCamera->GetPVMatrix() * model;
+	m_m4Model = glm::scale(glm::mat4(), glm::vec3(200.0f, 200.0f, 200.0f));
+	m_m4MVP = m_pCamera->GetPVMatrix() * m_m4Model;
 }
 
 
@@ -151,11 +151,17 @@ void cCubeMap::Render()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_gliTextureID);
 
+	//GLuint modelLoc = glGetUniformLocation(m_gliProgram, "model");
+	//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(m_m4Model));
+
 	GLuint CubeShaderUniform = glGetUniformLocation(m_gliProgram, "cubeSampler");
 	glUniform1i(CubeShaderUniform, 0);
 
 	GLuint MVPUniform = glGetUniformLocation(m_gliProgram, "MVP");
 	glUniformMatrix4fv(MVPUniform, 1, GL_FALSE, glm::value_ptr(m_m4MVP));
+
+	//GLuint camPos = glGetUniformLocation(m_gliProgram, "camPos");
+	//glUniform3fv(camPos, 1, value_ptr(m_pCamera->GetCamPos()));
 
 	//Draw
 	glBindVertexArray(m_gluiVAO);

@@ -47,9 +47,9 @@ int main(int argc, char** argv)
 	glutSetOption(GLUT_MULTISAMPLE, 8);
 	glEnable(GL_MULTISAMPLE);
 
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-	//glFrontFace(GL_CCW);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -66,7 +66,7 @@ int main(int argc, char** argv)
 	}
 
 	//Sets the clear color
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); //Black
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f); //Grey
 
 
 	GameManager.Initialise(0.0f);
