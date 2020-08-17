@@ -23,8 +23,6 @@ int main(int argc, char** argv)
 	//Setup and create at glut controlled window
 	glutInit(&argc, argv);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA | GLUT_MULTISAMPLE);
 	glutInitWindowPosition(50, 50);
 	glutInitWindowSize(SCR_WIDTH, SCR_HEIGHT);
@@ -39,11 +37,6 @@ int main(int argc, char** argv)
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glStencilMask(0x00); //disable writing to stencil mask
 
-	//Moved from render!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	//glEnable(GL_STENCIL_TEST);
-	//glStencilFunc(GL_ALWAYS, 1, 0xFF);
-	//glStencilMask(0x00); //disable writing to stencil buffer
-
 	glutSetOption(GLUT_MULTISAMPLE, 8);
 	glEnable(GL_MULTISAMPLE);
 
@@ -53,8 +46,11 @@ int main(int argc, char** argv)
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 
 	//Sets up all gl function callbacks

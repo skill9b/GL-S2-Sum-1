@@ -28,8 +28,8 @@ public:
 	void CameraMove(float _deltaTime);
 	void MousePick(float _deltaTime);
 	bool RayEntityIntersect(cEntity* Object);
-	bool ToggleCull();
-	bool ToggleWireFrame();
+	void ToggleCull();
+	void ToggleWireFrame();
 
 private:
 	cMenu* m_pMainMenu;
@@ -47,6 +47,8 @@ private:
 	cEntity* m_pWater;
 	cEntity* m_pCamForwardButton;
 	cEntity* m_pCamBackwardButton;
+	cEntity* m_pCubeForwardButton;
+	cEntity* m_pCubeBackwardButton;
 
 
 	//Managers
@@ -60,6 +62,7 @@ private:
 	GLuint m_gliTestProgram;
 	bool IsFirstLevel;
 	float CamSpeed;
+	float CubeSpeed;
 
 	//Stencil 
 	bool StencilOn;
@@ -73,9 +76,11 @@ private:
 	bool RestartKeyPressed;
 
 	//Back Cullng
+	bool BackCullDisabled;
 	bool CullKeyPressed;
 
 	//Antialiasing
+	bool WireFrameDisabled;
 	bool WireKeyPressed;
 
 };

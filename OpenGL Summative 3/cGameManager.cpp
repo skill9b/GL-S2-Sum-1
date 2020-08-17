@@ -22,12 +22,15 @@ cGameManager::cGameManager()
 	m_fScreenHeight = SCR_HEIGHT;
 
 	CamSpeed = 25.0f;
+	CubeSpeed = 25.0f;
 	IsFirstLevel = false;
 	StencilOn = true;
 	StencilKeyPressed = false;
 	ScissorKeyPressed = false;
 	RestartKeyPressed = false;
 	ScissorDisabled = false;
+	WireFrameDisabled = true;
+	BackCullDisabled = false;
 }
 
 cGameManager::~cGameManager()
@@ -53,29 +56,31 @@ cGameManager::~cGameManager()
 void cGameManager::Initialise(float _deltaTime)
 {
 	//Initilise member variables
-	//m_pLevelOne->Initialise(m_pCamera);
-	//m_pMainMenu->Initialise();
+
 	m_pCamera->Initialise(SCR_WIDTH, SCR_HEIGHT, 10000.0f, 0.1f);
 	m_pCubeMap = new cCubeMap(m_pCamera);
 
-
 	m_pCube = InitialiseCube("Resources/Textures/YellowCube.png");
-	m_pCube->SetTranslation(m_pCube->GetTranslate() + vec3 (0.0f, 2.0f, 0.0f));
+	m_pCube->SetTranslation(m_pCube->GetTranslate() + vec3 (0.0f, 3.0f, 0.0f));
 	m_pScaledCube = InitialiseCube("Resources/Textures/RedOutline.png");
 	m_pScaledCube->SetScale(vec3(1.0f, 1.0f, 1.0f), 1.2f);
 	m_pScaledCube->SetTranslation(m_pCube->GetTranslate());
 
-
 	m_pTransparentCube = InitialiseCube("Resources/Textures/TransparentCube.png");
 	m_pWater = InitialiseCube("Resources/Textures/Water.png");
-	//m_pWater->SetScale(vec3(2.0f, 1.0f, 2.0f), 1.0f);
 	m_pWater->SetTranslation(m_pTransparentCube->GetTranslate() + vec3(0.0f, 1.0f, 0.0f));
 
-	m_pCamForwardButton = InitialiseCube("Resources/Textures/ForwardArrow.png");
-	m_pCamForwardButton->SetTranslation(vec3(5.0f, 0.0f, 0.0f));
+	m_pCamForwardButton = InitialiseCube("Resources/Textures/CamForward.png");
+	m_pCamForwardButton->SetTranslation(vec3(3.5f, 0.0f, 0.0f));
 
-	m_pCamBackwardButton = InitialiseCube("Resources/Textures/BackwardArrow.png");
-	m_pCamBackwardButton->SetTranslation(vec3(-5.0f, 0.0f, 0.0f));
+	m_pCamBackwardButton = InitialiseCube("Resources/Textures/CamBackward.png");
+	m_pCamBackwardButton->SetTranslation(vec3(-3.5f, 0.0f, 0.0f));
+
+	m_pCubeForwardButton = InitialiseCube("Resources/Textures/CubeForward.png");
+	m_pCubeForwardButton->SetTranslation(vec3(1.5f, 0.0f, 0.0f));
+
+	m_pCubeBackwardButton = InitialiseCube("Resources/Textures/CubeBackward.png");
+	m_pCubeBackwardButton->SetTranslation(vec3(-1.5f, 0.0f, 0.0f));
 
 	//Program
 	m_gliBasicProgram = ShaderLoader::CreateProgram("Resources/Shaders/Basic.vs",
@@ -88,49 +93,14 @@ void cGameManager::Initialise(float _deltaTime)
 }
 void cGameManager::ResetCurrentLevel(float _deltaTime)
 {
-	//Reset current level objects
-	//if (!IsFirstLevel)
-	//{
-	//	//Destroy
-	//	m_pCube->~cEntity();
-	//	m_pScaledCube->~cEntity();
-	//
-	//	//Re-create
-	//	m_pCube = new cEntity();
-	//	m_pScaledCube = new cEntity();
-	//	m_pWater = new cEntity();
-	//
-	//	//Initialise
-	//	m_pCube = InitialiseCube("Resources/Textures/TransparentCube.png");
-	//	m_pScaledCube = InitialiseCube("Resources/Textures/RedOutline.png");
-	//	m_pScaledCube->SetScale(vec3(1.0f, 1.0f, 1.0f), 1.1f);
-	//}
-	//else
-	//{
-		//Destroy
-		//m_pTransparentCube->~cEntity();
-		//m_pWater->~cEntity();
-		//m_pCamBackwardButton->~cEntity();
-		//m_pCamForwardButton->~cEntity();
+	m_pCamera = new cCamera();
+	m_pCamera->Initialise(SCR_WIDTH, SCR_HEIGHT, 10000.0f, 0.1f);
 
-		//Re-create
-		//m_pTransparentCube = new cEntity();
-		//m_pWater = new cEntity();
-		//m_pCamForwardButton = new cEntity();
-		//m_pCamBackwardButton = new cEntity();
+	m_pTransparentCube = InitialiseCube("Resources/Textures/TransparentCube.png");
+	m_pTransparentCube->SetTranslation(vec3(0.0f, 0.0f, 0.0f));
 
-		//Initialise
-		m_pTransparentCube = InitialiseCube("Resources/Textures/TransparentCube.png");
-
-		//m_pWater = InitialiseCube("Resources/Textures/Water.png");
-		//m_pWater->SetTranslation(m_pTransparentCube->GetTranslate() - vec3(0.0f, 1.0f, 0.0f));
-
-		//m_pCamForwardButton = InitialiseCube("Resources/Textures/ForwardArrow.png");
-		m_pCamForwardButton->SetTranslation(vec3(5.0f, 0.0f, 0.0f));
-
-		//m_pCamBackwardButton = InitialiseCube("Resources/Textures/BackwardArrow.png");
-		m_pCamBackwardButton->SetTranslation(vec3(-5.0f, 0.0f, 0.0f));
-	//}
+	m_pCamForwardButton->SetTranslation(vec3(3.5f, 0.0f, 0.0f));
+	m_pCamBackwardButton->SetTranslation(vec3(-3.5f, 0.0f, 0.0f));
 
 	glStencilMask(0xFF); //enable writing to stencil buffer
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -156,8 +126,6 @@ void cGameManager::Render()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glStencilMask(0x00); //disable writing to stencil buffer
 
-	//m_pCubeMap->Render();
-
 	RenderCurrentLevel();
 
 	glutSwapBuffers();
@@ -177,57 +145,53 @@ void cGameManager::RenderCurrentLevel()
 	else
 	{
 		//Clear buffer
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); //Black
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		glEnable(GL_SCISSOR_TEST);
 		glScissor(0, 50, 600, 500);
-		glClearColor(0.5f, 0.5f, 0.5f, 1.0f); //Black
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	}
 
-	//if (IsFirstLevel)
-	//{
-		glEnable(GL_STENCIL_TEST);
-		glStencilFunc(GL_ALWAYS, 1, 0xFF); 
-		glStencilMask(0xFF); // enable writing to the stencil buffer
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_ALWAYS, 1, 0xFF); 
+	glStencilMask(0xFF); // enable writing to the stencil buffer
 
-		m_pCube->Render(m_gliTestProgram, m_pCamera);
+	m_pCube->Render(m_gliTestProgram, m_pCamera);
 
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF); // write to areas where value is not equal to 1
-		glStencilMask(0x00); //disable writing to stencil buffer
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF); // write to areas where value is not equal to 1
+	glStencilMask(0x00); //disable writing to stencil buffer
 
-		if (StencilOn)
-		{
-			m_pScaledCube->Render(m_gliTestProgram, m_pCamera);
-		}
+	if (StencilOn)
+	{
+		m_pScaledCube->Render(m_gliTestProgram, m_pCamera);
+	}
 
-		glDisable(GL_STENCIL_TEST);
-	//}
-	//else
-	//{
-		//Add fog shader code and make new program
-		m_pCamForwardButton->Render(m_gliTestProgram, m_pCamera);
-		m_pCamBackwardButton->Render(m_gliTestProgram, m_pCamera);
+	glDisable(GL_STENCIL_TEST);
+
+	m_pCamForwardButton->Render(m_gliTestProgram, m_pCamera);
+	m_pCamBackwardButton->Render(m_gliTestProgram, m_pCamera);
+
+	m_pCubeForwardButton->Render(m_gliTestProgram, m_pCamera);
+	m_pCubeBackwardButton->Render(m_gliTestProgram, m_pCamera);
 		
-		m_pTransparentCube->Render(m_gliTestProgram, m_pCamera);
-		m_pWater->Render(m_gliTestProgram, m_pCamera);
-	//}
+	m_pTransparentCube->Render(m_gliTestProgram, m_pCamera);
+	m_pWater->Render(m_gliTestProgram, m_pCamera);
 }
 
 void cGameManager::UpdateCurrentLevel(float _deltaTime)
 {
-	//if (IsFirstLevel)
-	//{
-		m_pCube->Update(_deltaTime);
-		m_pScaledCube->Update(_deltaTime);
-	//}
-	//else
-	//{
-		m_pCamForwardButton->Update(_deltaTime);
-		m_pCamBackwardButton->Update(_deltaTime);
-		m_pWater->Update(_deltaTime);
-		m_pTransparentCube->Update(_deltaTime);
-	//}
+	m_pCube->Update(_deltaTime);
+	m_pScaledCube->Update(_deltaTime);
+
+	m_pCamForwardButton->Update(_deltaTime);
+	m_pCamBackwardButton->Update(_deltaTime);
+
+	m_pCubeForwardButton->Update(_deltaTime);
+	m_pCubeBackwardButton->Update(_deltaTime);
+
+	m_pWater->Update(_deltaTime);
+	m_pTransparentCube->Update(_deltaTime);
 }
 
 void cGameManager::CheckInput(float _deltaTime)
@@ -269,7 +233,7 @@ void cGameManager::CheckInput(float _deltaTime)
 	//Toggle Wireframe
 	if (m_pInputManager->KeyState['u'] == InputState::INPUT_DOWN_FIRST && WireKeyPressed == false)
 	{
-		//ToggleScissor();
+		ToggleWireFrame();
 		WireKeyPressed = true;
 	}
 	else if (m_pInputManager->KeyState['u'] == InputState::INPUT_UP_FIRST)
@@ -280,7 +244,7 @@ void cGameManager::CheckInput(float _deltaTime)
 	//Toggle Backface culling
 	if (m_pInputManager->KeyState['i'] == InputState::INPUT_DOWN_FIRST && CullKeyPressed == false)
 	{
-		//ToggleScissor();
+		ToggleCull();
 		CullKeyPressed = true;
 	}
 	else if (m_pInputManager->KeyState['i'] == InputState::INPUT_UP_FIRST)
@@ -307,59 +271,62 @@ void cGameManager::ToggleStencilOutline()
 void cGameManager::ToggleScissor()
 {
 	ScissorDisabled = !ScissorDisabled;
-
-	//if (glIsEnabled(GL_SCISSOR_TEST))
-	//{
-	//	//If on turn off
-	//	glDisable(GL_SCISSOR_TEST);
-	//	glScissor(0, 0, 600, 600);
-	//}
-	//else
-	//{
-	//	//Else turn on
-	//	glClear(GL_COLOR_BUFFER_BIT);
-	//	glEnable(GL_SCISSOR_TEST);
-	//	glScissor(0, 50, 600, 500);
-	//}
 }
 
 void cGameManager::CameraMove(float _deltaTime)
 {
 	//Move Camera
+	if (m_pInputManager->KeyState['a'] == InputState::INPUT_DOWN_FIRST)
+	{
+		//Left
+		m_pCamera->MoveRelative(vec3(CamSpeed * _deltaTime, 0.0f, 0.0f));
+	}
+	else if (m_pInputManager->KeyState['d'] == InputState::INPUT_DOWN_FIRST)
+	{
+		//Right
+		m_pCamera->MoveRelative(vec3(-CamSpeed * _deltaTime, 0.0f, 0.0f));
+	}
+
 	if (m_pInputManager->KeyState['w'] == InputState::INPUT_DOWN_FIRST)
 	{
 		//Forward
 		m_pCamera->MoveRelative(vec3(0.0f, 0.0f, CamSpeed * _deltaTime));
 	}
-	if (m_pInputManager->KeyState['s'] == InputState::INPUT_DOWN_FIRST)
+	else if (m_pInputManager->KeyState['s'] == InputState::INPUT_DOWN_FIRST)
 	{
 		//Back
 		m_pCamera->MoveRelative(vec3(0.0f, 0.0f, -CamSpeed * _deltaTime));
+
 	}
-	//if (m_pInputManager->KeyState['a'] == InputState::INPUT_DOWN_FIRST)
-	//{
-	//	//Left
-	//	m_pCamera->MoveRelative(vec3(-CamSpeed * _deltaTime, 0.0f, 0.0f));
-	//}
-	//if (m_pInputManager->KeyState['d'] == InputState::INPUT_DOWN_FIRST)
-	//{
-	//	//Right	
-	//	m_pCamera->MoveRelative(vec3(CamSpeed * _deltaTime, 0.0f, 0.0f));
-	//}
 }
+
 
 void cGameManager::MousePick(float _deltaTime)
 {
 	if (m_pInputManager->IsMouseClicked(0))
 	{
+		//Move cam
 		if (RayEntityIntersect(m_pCamForwardButton))
 		{
-			//Move cam forward
+			//Forward
 			m_pCamera->MoveRelative(vec3(0.0f, 0.0f, CamSpeed * _deltaTime));
 		}
 		if (RayEntityIntersect(m_pCamBackwardButton))
 		{
+			//Back
 			m_pCamera->MoveRelative(vec3(0.0f, 0.0f, -CamSpeed * _deltaTime));
+		}
+
+		//Move cube
+		if (RayEntityIntersect(m_pCubeForwardButton))
+		{
+			//Forward
+			m_pTransparentCube->SetTranslation(m_pTransparentCube->GetTranslate() + vec3(0.0f, 0.0f, CubeSpeed * _deltaTime));
+		}
+		if (RayEntityIntersect(m_pCubeBackwardButton))
+		{
+			//Back
+			m_pTransparentCube->SetTranslation(m_pTransparentCube->GetTranslate() + vec3(0.0f, 0.0f, -CubeSpeed * _deltaTime));
 		}
 	}
 }
@@ -367,22 +334,22 @@ void cGameManager::MousePick(float _deltaTime)
 bool cGameManager::RayEntityIntersect(cEntity* Object)
 {
 	bool Intersect = false;
-	glm::vec3 vec3rayDirection = vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 vec3RayDirection = vec3(0.0f, 0.0f, 0.0f);
 
 	//screen pos
-	glm::vec2 normalizedScreenPos = m_pInputManager->GetMouseCoords();
+	glm::vec2 vec2NormalizedScreenPos = m_pInputManager->GetMouseCoords();
 	//screenpos to Proj Space
-	glm::vec4 clipCoords = glm::vec4(normalizedScreenPos.x, normalizedScreenPos.y, -1.0f, 1.0f);
+	glm::vec4 vec4ClipCoords = glm::vec4(vec2NormalizedScreenPos.x, vec2NormalizedScreenPos.y, -1.0f, 1.0f);
 
 	//Proj Space to eye space
-	glm::mat4 invProjMat = glm::inverse(m_pCamera->GetProjectionMatrix());
-	glm::vec4 eyeCoords = invProjMat * clipCoords;
-	eyeCoords = glm::vec4(eyeCoords.x, eyeCoords.y, -1.0f, 0.0f);
+	glm::mat4 mat4InvProjMat = glm::inverse(m_pCamera->GetProjectionMatrix());
+	glm::vec4 vec4EyeCoords = mat4InvProjMat * vec4ClipCoords;
+	vec4EyeCoords = glm::vec4(vec4EyeCoords.x, vec4EyeCoords.y, -1.0f, 0.0f);
 
 	//eyespace to world space
-	glm::mat4 invViewMat = glm::inverse(m_pCamera->GetViewMatrix());
-	glm::vec4 rayWorld = invViewMat * eyeCoords;
-	vec3rayDirection = glm::normalize(glm::vec3(rayWorld));
+	glm::mat4 m4InvViewMat = glm::inverse(m_pCamera->GetViewMatrix());
+	glm::vec4 vec4RayWorld = m4InvViewMat * vec4EyeCoords;
+	vec3RayDirection = glm::normalize(glm::vec3(vec4RayWorld));
 
 	vec3 vec3CamPos = m_pCamera->GetCamPos();
 
@@ -392,10 +359,9 @@ bool cGameManager::RayEntityIntersect(cEntity* Object)
 		vec4 vec4Point2 = Object->GetModel() * vec4(Object->GetMesh()->GetVertices().at(Object->GetMesh()->GetIndices().at(i + 1)).Position, 1.0f);
 		vec4 vec4Point3 = Object->GetModel() * vec4(Object->GetMesh()->GetVertices().at(Object->GetMesh()->GetIndices().at(i + 2)).Position, 1.0f);
 
-
 		vec3 IntersectPoint = vec3(0.0f, 0.0f, 0.0f);
 
-		if (glm::intersectRayTriangle(vec3CamPos, vec3rayDirection, vec3(vec4Point1), vec3(vec4Point2), vec3(vec4Point3), IntersectPoint))
+		if (glm::intersectRayTriangle(vec3CamPos, vec3RayDirection, vec3(vec4Point1), vec3(vec4Point2), vec3(vec4Point3), IntersectPoint))
 		{
 			Intersect = true;
 		}
@@ -404,15 +370,18 @@ bool cGameManager::RayEntityIntersect(cEntity* Object)
 	return Intersect;
 }
 
-bool cGameManager::ToggleCull()
+void cGameManager::ToggleCull()
 {
-	return false;
+	BackCullDisabled = !BackCullDisabled;
+	BackCullDisabled ? glDisable(GL_CULL_FACE) : glEnable(GL_CULL_FACE);
 }
 
-bool cGameManager::ToggleWireFrame()
+void cGameManager::ToggleWireFrame()
 {
-	return false;
+	WireFrameDisabled = !WireFrameDisabled;
+	WireFrameDisabled ? glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) : glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
+
 
 void cGameManager::SwitchLevel(float _deltaTime)
 {
@@ -591,42 +560,31 @@ cEntity* cGameManager::InitialiseCube(string filedir)
 
 	//Indices
 	vector <GLuint > vecCubeIndices;
-	vecCubeIndices.push_back(0);
-	vecCubeIndices.push_back(1);
-	vecCubeIndices.push_back(2);
-	vecCubeIndices.push_back(0);
-	vecCubeIndices.push_back(2);
-	vecCubeIndices.push_back(3);
-	vecCubeIndices.push_back(7);
-	vecCubeIndices.push_back(6);
-	vecCubeIndices.push_back(5);
-	vecCubeIndices.push_back(7);
-	vecCubeIndices.push_back(5);
-	vecCubeIndices.push_back(4);
-	vecCubeIndices.push_back(8);
-	vecCubeIndices.push_back(9);
-	vecCubeIndices.push_back(10);
-	vecCubeIndices.push_back(8);
-	vecCubeIndices.push_back(10);
-	vecCubeIndices.push_back(11);
-	vecCubeIndices.push_back(12);
-	vecCubeIndices.push_back(13);
-	vecCubeIndices.push_back(14);
-	vecCubeIndices.push_back(12);
-	vecCubeIndices.push_back(14);
-	vecCubeIndices.push_back(15);
-	vecCubeIndices.push_back(16);
-	vecCubeIndices.push_back(17);
-	vecCubeIndices.push_back(18);
-	vecCubeIndices.push_back(16);
-	vecCubeIndices.push_back(18);
-	vecCubeIndices.push_back(19);
-	vecCubeIndices.push_back(20);
-	vecCubeIndices.push_back(21);
-	vecCubeIndices.push_back(22);
-	vecCubeIndices.push_back(20);
-	vecCubeIndices.push_back(22);
-	vecCubeIndices.push_back(23);
+
+	GLuint indices[] = {
+		0, 1, 2, // Front
+		0, 2, 3, // Front
+
+		7, 6, 5, // Back
+		7, 5, 4, // Back
+
+		8, 9, 10, // Left
+		8, 10, 11, // Left
+
+		12, 13, 14, // Right
+		12, 14, 15, // Right
+
+		16, 17, 18, // Top
+		16, 18, 19, // Top
+
+		20, 21, 22, // Bottom
+		20, 22, 23, // Bottom
+	};
+
+	for (GLuint i = 0; i < 36; i++)
+	{
+		vecCubeIndices.push_back(indices[i]);
+	}
 
 	string strCubeImage = "Resources/Textures/NewBall.png";
 	int fCubeFrames = 1;

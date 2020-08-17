@@ -7,7 +7,7 @@ cCamera::cCamera()
 	m_fFar = 0.0f;
 	m_fNear = 0.0f;
 	m_fTimeElapsed = 0.0f;
-	m_v3Position = vec3(4.0f, 5.0f, 5.0f);
+	m_v3Position = vec3(0.0f, 5.0f, -10.0f);
 	m_v3LookDirection = vec3(0.0f, 0.0f, 0.0f);
 	m_v3UpDirection = vec3(0.0f, 1.0f, 0.0f);
 }
@@ -18,6 +18,9 @@ void cCamera::Initialise(float _fWidth, float _fHeight, float _fFar, float _fNea
 	m_fSCR_HEIGHT = _fHeight;
 	m_fFar = _fFar;
 	m_fNear = _fNear;
+
+	SetViewMatrix();
+	SetProjectionMatrix(perspective(45.0f, GetWidth() / GetHeight(), m_fNear, m_fFar));
 }
 
 cCamera::~cCamera()
